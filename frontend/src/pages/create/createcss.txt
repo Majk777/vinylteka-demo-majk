@@ -1,0 +1,70 @@
+.create-inputs {
+  margin-right: 10px;
+  /* background-color: aqua; */
+  margin: 10px 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 1.875rem;
+  letter-spacing: 0.55em;
+  padding: 0 5px;
+}
+.create-inputs input {
+  background-color: #dde0d8;
+  border: solid black 2px;
+}
+
+.create-form {
+  display: flex;
+  flex-direction: column;
+  background-color: #e04038;
+}
+
+.create-form span {
+  width: 50%;
+}
+
+.custom-file-upload {
+  display: inline-block;
+  padding: 8px 12px;
+  cursor: pointer;
+  /* background-color: #c24b2d; */
+  /* width: 200px;
+  height: 100px; */
+  /* line-height: 100px; */
+  text-align: center;
+  color: white;
+  /* border-radius: 4px; */
+  border: 2px solid white;
+}
+
+.custom-file-upload:hover {
+  background-color: white;
+  border-color: white;
+  color: black;
+}
+
+input.custom-input {
+  padding: 10px; /* Dodaje 10px marginesu wewnętrznego */
+  letter-spacing: 0;
+  font-size: 16px;
+  width: 50%;
+  font-weight: 100;
+}
+
+.btn-add {
+  border: solid black 2px;
+  letter-spacing: 0;
+}
+
+.setdescription {
+  background-color: #dde0d8;
+  border: solid black 2px;
+  padding: 10px; /* Dodaje 10px marginesu wewnętrznego */
+  letter-spacing: 0;
+  font-size: 16px;
+  width: 50%;
+  font-weight: 100;
+}

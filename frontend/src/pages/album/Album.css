@@ -1,0 +1,85 @@
+.parentDiv:hover .backDiv {
+  transform: translateX(75%); /* Adjust the value as needed */
+  /* transition: transform 0.9s ease-in-out; */
+}
+.Bcircles {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.circle {
+  position: absolute;
+  border-radius: 50%;
+}
+.bgCircle {
+  position: absolute;
+  border-radius: 50%;
+  width: 370px;
+  height: 370px;
+}
+.c-one {
+  width: 350px;
+  height: 350px;
+  border-left: 5px solid;
+  animation: rightrotate 1s linear infinite;
+}
+.c-two {
+  width: 300px;
+  height: 300px;
+  border-right: 4px solid;
+  animation: leftrotate 1s linear infinite;
+}
+.c-three {
+  width: 150px;
+  height: 150px;
+  border-top: 3px solid;
+  animation: rightrotate 1s linear infinite;
+}
+
+@keyframes rightrotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.bandName {
+  top: 50%;
+  left: 10%;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  position: sticky;
+  width: fit-content;
+}
+.bandNameScrollStop {
+  left: 10%;
+  bottom: 184px;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  position: absolute;
+}
+.tags-wrapper {
+  letter-spacing: -0.1rem;
+}
+.genres {
+  text-align: right;
+}
+.comment-placeholder {
+  background-color: #f0f0f0;
+}
+
+.single-pic-wrapper span {
+  transform: translate(-21%, 500%) rotate(90deg);
+  position: absolute;
+  font-size: xx-large;
+  font-weight: 900;
+}
+.pic-description {
+  transform: rotate(90deg);
+  align-self: center;
+  font-size: xx-large;
+  font-weight: 900;
+}
+.img-proportions {
+  width: 100%; /* lub inna wartość w zależności od pożądanej szerokości */
+  max-width: 2xl; /* lub inna wartość maksymalnej szerokości */
+}

@@ -1,0 +1,15 @@
+.logins {
+  /* height: max-content; */
+}
+/* Navbar.css */
+.svg-icon {
+  width: 294px;
+  height: 83px;
+}
+
+@media (max-width: 768px) {
+  .svg-icon {
+    width: 150px; /* Dopasuj rozmiar według potrzeb */
+    height: auto;
+  }
+}

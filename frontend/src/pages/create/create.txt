@@ -1,0 +1,332 @@
+import { useState, useEffect, useRef } from "react";
+import { useAlbumsContext } from "../../hooks/useAlbumsContext";
+import "./Create.css";
+
+const Create = () => {
+  const { dispatch } = useAlbumsContext();
+
+  const [file, setFile] = useState(null);
+  const [file2, setFile2] = useState(null);
+  const [file3, setFile3] = useState(null);
+  const [previewUrls, setPreviewUrls] = useState([]);
+
+  const [bandName, setbandName] = useState("");
+  const [albumTitle, setalbumTitle] = useState("");
+  const [description, setdescription] = useState("");
+  const [label, setlabel] = useState("");
+  const [released, setreleased] = useState("");
+  const [type, settype] = useState("");
+  const [genres, setgenres] = useState([]);
+  const [genre, setgenre] = useState("");
+  const ingredientInput = useRef(null);
+  const [error, setError] = useState(null);
+
+  const fileForFrontUpload = (e) => {
+    console.log(e.target.files);
+    setFile(e.target.files[0]);
+  };
+
+  const fileForBackUpload = (e) => {
+    console.log(e.target.files);
+    setFile2(e.target.files[0]);
+  };
+
+  const fileForBandPicUpload = (e) => {
+    console.log(e.target.files);
+    setFile3(e.target.files[0]);
+  };
+
+  useEffect(() => {
+    const readFile = (file) => {
+      return new Promise((resolve, reject) => {
+        if (file instanceof Blob) {
+          const fileReader = new FileReader();
+          fileReader.onload = () => resolve(fileReader.result);
+          fileReader.onerror = reject;
+          fileReader.readAsDataURL(file);
+        } else {
+          reject(new Error("Parameter is not a Blob"));
+        }
+      });
+    };
+
+    const loadPreviews = async (files) => {
+      const previews = await Promise.all(files.map(readFile));
+      setPreviewUrls(previews);
+    };
+
+    if (file || file2 || file3) {
+      const files = [file, file2, file3].filter((f) => f !== null);
+      if (files.length > 0) {
+        loadPreviews(files);
+      }
+    }
+  }, [file, file2, file3]);
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   console.log(
+  //     bandName,
+  //     albumTitle,
+  //     description,
+  //     label,
+  //     released,
+  //     type,
+  //     genres
+  //   );
+
+  //   const album = {
+  //     bandName,
+  //     albumTitle,
+  //     description,
+  //     label,
+  //     released,
+  //     type,
+  //     genres,
+  //   };
+
+  //   const response = await fetch("http://localhost:4000/api/albums", {
+  //     method: "POST",
+  //     body: JSON.stringify(album),
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   });
+
+  //   const json = await response.json();
+
+  //   if (!response.ok) {
+  //     console.log("before mistake");
+  //     setError(json.error);
+  //     console.log(json);
+
+  //     // console.log(JSON.parse(json));
+  //     console.log(response);
+  //     console.log("after mistake");
+  //   }
+  //   if (response.ok) {
+  //     setError(null);
+  //     setbandName("");
+  //     setalbumTitle("");
+  //     setdescription("");
+  //     setlabel("");
+  //     setreleased("");
+  //     settype("");
+  //     setgenres([]);
+  //     console.log("new recipe added:", album);
+  //     console.log("new recipe-json added:", json);
+  //     dispatch({ type: "CREATE_ALBUM", payload: json });
+
+  //     // coś nie działa IMPORTOWAĆ TUTAJ HOME !!!!!!!!!!!!!!!!!!!!!!!
+  //   }
+  // };
+
+  // const album = {
+  //   bandName,
+  //   albumTitle,
+  //   description,
+  //   label,
+  //   released,
+  //   type,
+  //   genres,
+  // };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+
+    // const userStorage = localStorage.getItem("user");
+    const userStorage = JSON.parse(localStorage.getItem("user"));
+    // const userStorageJson = JSON.stringify(userStorage);
+    console.log(userStorage.user);
+
+    formData.append("username", userStorage.user);
+    // formData.append("file", file);
+    formData.append("bandName", bandName);
+    formData.append("description", description);
+    formData.append("albumTitle", albumTitle);
+    formData.append("label", label);
+    formData.append("released", released);
+    formData.append("type", type);
+    formData.append("file", file);
+    formData.append("file2", file2);
+    formData.append("file3", file3);
+
+    genres.forEach((genre) => formData.append("genres[]", genre));
+    // formData.append("genres", genres);
+    // genres;
+    console.log(formData);
+    console.log(genres);
+
+    // "http://localhost:4000/api/upload"
+    const response = await fetch("http://localhost:4000/api/albums", {
+      method: "POST",
+      body: formData,
+    });
+    const json = await response.json();
+    const responseJson = JSON.stringify(json);
+
+    if (!response.ok) {
+      console.log("before mistake");
+      setError(json.error);
+      console.log(json);
+
+      // console.log(JSON.parse(json));
+      console.log(response);
+      console.log("after mistake");
+    }
+
+    if (response.ok) {
+      console.log(json);
+      console.log(responseJson);
+      dispatch({ type: "CREATE_ALBUM", payload: json });
+    }
+    for (var pair of formData.entries()) {
+      console.log(pair[0] + ", " + pair[1]);
+    }
+    // console.log(file, title, description);
+  };
+
+  const handleAdd = (e) => {
+    e.preventDefault();
+    const ing = genre.trim();
+
+    if (ing && !genres.includes(ing)) {
+      setgenres((prevGenres) => [...prevGenres, genre]);
+    }
+    setgenre("");
+    ingredientInput.current.focus();
+  };
+
+  return (
+    <div className="create-form-wrapper h-full flex flex-row justify-center my-28">
+      <form onSubmit={onSubmit} className="bg-emerald-300 w-10/12">
+        <label className="create-inputs">
+          <span>Name of the band:</span>
+          <input
+            type="text"
+            name="name"
+            onChange={(e) => setbandName(e.target.value)}
+            value={bandName}
+            required
+          />
+        </label>
+
+        <label className="create-inputs">
+          <span>albumTitle:</span>
+          <input
+            type="text"
+            name="name"
+            onChange={(e) => setalbumTitle(e.target.value)}
+            value={albumTitle}
+            required
+          />
+        </label>
+
+        <label className="create-inputs">
+          <span> description:</span>
+          <input
+            type="text"
+            name="name"
+            onChange={(e) => setdescription(e.target.value)}
+            value={description}
+            required
+          />
+        </label>
+
+        <label className="create-inputs">
+          <span>label:</span>
+          <input
+            type="text"
+            name="name"
+            onChange={(e) => setlabel(e.target.value)}
+            value={label}
+          />
+        </label>
+
+        <label className="create-inputs">
+          <span>released:</span>
+          <input
+            type="text"
+            name="name"
+            onChange={(e) => setreleased(e.target.value)}
+            value={released}
+            required
+          />
+        </label>
+
+        <label className="create-inputs">
+          <span> type:</span>
+          <input
+            type="text"
+            name="name"
+            onChange={(e) => settype(e.target.value)}
+            value={type}
+            required
+          />
+        </label>
+
+        <label className="create-inputs">
+          <span>genres:</span>
+          <div className="ingredients">
+            <input
+              type="text"
+              onChange={(e) => setgenre(e.target.value)}
+              value={genre}
+              ref={ingredientInput}
+              required
+            />
+            <button onClick={handleAdd} className="btn">
+              add
+            </button>
+          </div>
+        </label>
+        <p>
+          Current genres:{" "}
+          {genres.map((i) => (
+            <em key={i}>{i}, </em>
+          ))}
+        </p>
+
+        <button className="border-2 border-black h-24 p-4 hover:bg-black hover:text-white  max-xl:mt-5 w-40">
+          button
+        </button>
+
+        <div>
+          <h1>Upload Front Image</h1>
+          <input
+            type="file"
+            name="file"
+            onChange={fileForFrontUpload}
+            required
+          />
+        </div>
+
+        <div>
+          <h1>Upload Back Image</h1>
+          <input
+            type="file"
+            name="file2"
+            onChange={fileForBackUpload}
+            className="border-2 border-black h-24 p-4 hover:bg-black hover:text-white  max-xl:mt-5 w-40"
+          />
+        </div>
+
+        <div>
+          <h1>Upload Band Image</h1>
+          <input type="file" name="file3" onChange={fileForBandPicUpload} />
+        </div>
+
+        {previewUrls.length > 0 &&
+          previewUrls.map((url, index) => (
+            <img key={index} src={url} alt={`Preview ${index + 1}`} />
+          ))}
+
+        {error && <p>Nie można było dodać albumu</p>}
+      </form>
+    </div>
+  );
+};
+
+export default Create;

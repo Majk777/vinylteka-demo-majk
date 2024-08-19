@@ -1,0 +1,241 @@
+require("dotenv").config();
+const cors = require("cors");
+const express = require("express");
+const Grid = require("gridfs-stream");
+const { GridFsStorage } = require("multer-gridfs-storage");
+
+const {
+  BlobServiceClient,
+  StorageSharedKeyCredential,
+} = require("@azure/storage-blob");
+
+const accountName = process.env.ACCOUNT_NAME;
+const sasToken = process.env.SAS_TOKEN;
+const containerName = process.env.CONTAINER_NAME;
+const blobServiceClient = new BlobServiceClient(
+  `https://${accountName}.blob.core.windows.net/?${sasToken}`
+);
+const containerClient = blobServiceClient.getContainerClient(containerName);
+
+const alboumRoutes = require("./routes/albums");
+const userRoutes = require("./routes/user");
+const mongoose = require("mongoose");
+const multer = require("multer");
+const uploadSchema = require("./models/uploadModel");
+
+// express app
+const app = express();
+
+// middleware
+app.use(express.json());
+app.use(cors());
+
+app.use((req, res, next) => {
+  console.log(req.path, req.method);
+  next();
+});
+
+app.use("/api/albums", alboumRoutes);
+app.use("/api/user", userRoutes);
+
+app.get("/", (req, res) => {
+  res.json({ mssg: "welcome in main url" });
+});
+
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    //listen requests
+    app.listen(process.env.PORT, () => {
+      console.log("connected to db and listening on port", process.env.PORT);
+    });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+
+const conn = mongoose.connection;
+
+// const upload = multer({ dest: "files" });
+
+let gfs;
+let albums;
+
+conn.once("open", () => {
+  // Inicjalizacja strumienia GridFS
+  gfs = Grid(conn.db, mongoose.mongo);
+  gfs.collection("uploads");
+});
+
+// Konfiguracja przechowywania plików w GridFS
+const storage = new GridFsStorage({
+  url: process.env.MONGO_URI,
+  file: (req, file) => {
+    return {
+      filename: file.originalname,
+      bucketName: "uploads",
+    };
+  },
+});
+const upload = multer({ storage: storage });
+
+app.post("/api/upload", upload.single("file"), async (req, res) => {
+  const { username, title, description } = req.body;
+  const img = req.file;
+  console.log(req.body);
+  console.log(req.file);
+  console.log("your image is this" + image);
+  console.log("below image is down there");
+  console.log(img);
+  console.log(username);
+  console.log(title);
+  console.log(description);
+  try {
+    const uploadedImage = await uploadSchema.create({
+      username,
+      title,
+      description,
+      img: {
+        data: fs.readFileSync(
+          path.join(__dirname + "/uploads/" + req.file.filename)
+        ),
+        contentType: "image/png",
+      },
+    });
+    console.log("upload success");
+    res.status(200).json(uploadedImage);
+  } catch (error) {
+    // console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+  // console.log(file);
+  // res.json({ file: req.body });
+});
+
+module.exports = { conn, gfs };
+// app.listen(process.env.PORT, () => {
+//   console.log("server on run ;)");
+// });
+
+PRZERWA 
+
+require("dotenv").config();
+const cors = require("cors");
+const express = require("express");
+const Grid = require("gridfs-stream");
+const { GridFsStorage } = require("multer-gridfs-storage");
+
+const { handleImageUpload } = require("./middleware/azureBlobStorage");
+// const {
+//   BlobServiceClient,
+//   StorageSharedKeyCredential,
+// } = require("@azure/storage-blob");
+
+// const accountName = process.env.ACCOUNT_NAME;
+// const sasToken = process.env.SAS_TOKEN;
+// const containerName = process.env.CONTAINER_NAME;
+// const blobServiceClient = new BlobServiceClient(
+//   `https://${accountName}.blob.core.windows.net/?${sasToken}`
+// );
+// const containerClient = blobServiceClient.getContainerClient(containerName);
+
+const alboumRoutes = require("./routes/albums");
+const userRoutes = require("./routes/user");
+const mongoose = require("mongoose");
+const multer = require("multer");
+const uploadSchema = require("./models/uploadModel");
+
+// express app
+const app = express();
+
+// middleware
+app.use(express.json());
+app.use(cors());
+app.use(handleImageUpload);
+
+app.use((req, res, next) => {
+  console.log(req.path, req.method);
+  next();
+});
+
+app.use("/api/albums", alboumRoutes);
+app.use("/api/user", userRoutes);
+
+app.get("/", (req, res) => {
+  res.json({ mssg: "welcome in main url" });
+});
+
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    //listen requests
+    app.listen(process.env.PORT, () => {
+      console.log("connected to db and listening on port", process.env.PORT);
+    });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+
+const conn = mongoose.connection;
+
+// const upload = multer({ dest: "files" });
+
+let gfs;
+let albums;
+
+conn.once("open", () => {
+  // Inicjalizacja strumienia GridFS
+  gfs = Grid(conn.db, mongoose.mongo);
+  gfs.collection("uploads");
+});
+
+// Konfiguracja przechowywania plików w GridFS
+const storage = new GridFsStorage({
+  url: process.env.MONGO_URI,
+  file: (req, file) => {
+    return {
+      filename: file.originalname,
+      bucketName: "uploads",
+    };
+  },
+});
+const upload = multer({ storage: storage });
+
+app.post("/api/upload", upload.single("file"), async (req, res) => {
+  const { username, title, description } = req.body;
+  const img = req.file;
+  console.log(req.body);
+  console.log(req.file);
+  console.log("your image is this" + image);
+  console.log("below image is down there");
+  console.log(img);
+  console.log(username);
+  console.log(title);
+  console.log(description);
+  try {
+    const uploadedImage = await uploadSchema.create({
+      username,
+      title,
+      description,
+      img: {
+        data: fs.readFileSync(
+          path.join(__dirname + "/uploads/" + req.file.filename)
+        ),
+        contentType: "image/png",
+      },
+    });
+    console.log("upload success");
+    res.status(200).json(uploadedImage);
+  } catch (error) {
+    // console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+  // console.log(file);
+  // res.json({ file: req.body });
+});
+
+module.exports = { conn, gfs };
+// app.listen(process.env.PORT, () => {
+//   console.log("server on run ;)");
+// });
