@@ -11,7 +11,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log(email, password, comparePassword);
+
     setError(null);
 
     const userLogin = {
@@ -21,15 +21,13 @@ const Login = () => {
 
     if (!email || !password || !comparePassword) {
       setError("Uzupełnij wszystkie pola");
-      console.log("empty fields");
+
       return;
     }
 
     if (password === comparePassword) {
-      // "http://localhost:4000/api/user/login"
-
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/user/login`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/login`,
         {
           method: "POST",
           body: JSON.stringify(userLogin),
@@ -38,15 +36,9 @@ const Login = () => {
           },
         }
       );
-      console.log("passwords match");
-      const json = await response.json();
-      // const responseJson = JSON.stringify(json);
 
-      console.log(json);
-      // console.log(json);
-      // console.log(json.user);
-      // console.log(json.user.email);
-      // console.log(json.user.userName);
+      const json = await response.json();
+
       if (!response.ok) {
         setError("Bład logowania");
         return;
@@ -57,7 +49,6 @@ const Login = () => {
         dispatch({ type: "LOGIN", payload: json });
       }
     } else {
-      console.log("passwords dont match");
       setError("passwords dont match");
     }
   };
@@ -69,12 +60,9 @@ const Login = () => {
           onSubmit={handleLogin}
           className="signup-form flex flex-col  items-center my-20 mx-10 py-20 bg-red-500 backdrop-blur-sm"
         >
-          <label className=" ">{/* <span>Nazwa użytkownika</span> */}</label>
           <h1 className="text-center text-4xl font-semibold tracking-widest ">
             Zaloguj się
           </h1>
-
-          <label className=" ">{/* <span>Email</span> */}</label>
           <input
             placeholder="Email"
             type="text"
@@ -84,8 +72,6 @@ const Login = () => {
             className="ml-2 w-1/2 "
           />
 
-          <label className=" "></label>
-          {/* <span>Hasło</span> */}
           <input
             placeholder="Hasło"
             type="password"
@@ -95,8 +81,6 @@ const Login = () => {
             className="ml-2 w-1/2 "
           />
 
-          <label className=" "></label>
-          {/* <span>Powtórz hasło</span> */}
           <input
             placeholder="Powtórz hasło"
             type="password"
@@ -107,7 +91,7 @@ const Login = () => {
           />
 
           <button className="mt-4">Zaloguj się</button>
-          {error && <p className="mt-5 text-red-600">{error}!</p>}
+          {error && <p className="mt-5 text-red-600 font-medium">{error}!</p>}
         </form>
       </div>
     </div>

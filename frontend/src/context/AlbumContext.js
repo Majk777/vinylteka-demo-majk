@@ -5,39 +5,42 @@ export const AlbumContext = createContext();
 export const albumReducer = (state, action) => {
   switch (action.type) {
     case "GET_ALBUM": {
-      console.log(state);
-      console.log(action);
       return {
         album: action.payload,
       };
     }
     case "GET_ALBUMS": {
-      console.log(state);
-      console.log(action);
       return {
         albums: action.payload,
       };
     }
     case "CREATE_ALBUM": {
-      console.log(state);
-      console.log(action);
       return {
         albums: [action.payload, { ...state.albums }],
       };
     }
     case "DELETE_ALBUM": {
-      console.log(state);
-      console.log(action);
       return {
         albums: state.albums.filter((w) => w._id !== action.payload._id),
       };
-      // const updatedAlbums = state.albums.filter(
-      //   (album) => album._id !== action.payload
-      // );
-      // return {
-      //   albums: updatedAlbums,
-      //   album: null,
-      // };
+    }
+    // case "UPDATE_ALBUM": {
+    //   return {
+    //     albums: state.albums.map((album) =>
+    //       album._id === action.payload._id ? action.payload : album
+    //     ),
+    //   };
+    // }
+    case "UPDATE_ALBUM": {
+      if (state.albums) {
+        return {
+          albums: state.albums.map((album) =>
+            album._id === action.payload._id ? action.payload : album
+          ),
+        };
+      } else {
+        return state;
+      }
     }
     default:
       return state;
@@ -46,13 +49,11 @@ export const albumReducer = (state, action) => {
 
 export const AlbumContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(albumReducer, {
-    // album: null,
-    // albums: [],
-    albums: null,
+    // albums: null,
+    albums: [],
   });
 
   return (
-    // value={{ ...state, dispatch } czemu ... spytać chatgpt
     <AlbumContext.Provider value={{ ...state, dispatch }}>
       {children}
     </AlbumContext.Provider>

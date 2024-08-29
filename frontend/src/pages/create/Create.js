@@ -24,17 +24,14 @@ const Create = ({ user }) => {
   const [error, setError] = useState(null);
 
   const fileForFrontUpload = (e) => {
-    console.log(e.target.files);
     setFile(e.target.files[0]);
   };
 
   const fileForBackUpload = (e) => {
-    console.log(e.target.files);
     setFile2(e.target.files[0]);
   };
 
   const fileForBandPicUpload = (e) => {
-    console.log(e.target.files);
     setFile3(e.target.files[0]);
   };
 
@@ -67,15 +64,15 @@ const Create = ({ user }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
+    if (!file) {
+      setError("Musisz dodać okładkę płyty(Front)");
+      return;
+    }
 
-    // const userStorage = localStorage.getItem("user");
+    const formData = new FormData();
     const userStorage = JSON.parse(localStorage.getItem("user"));
-    // const userStorageJson = JSON.stringify(userStorage);
-    console.log(userStorage.user);
 
     formData.append("username", userStorage.user);
-    // formData.append("file", file);
     formData.append("bandName", bandName);
     formData.append("description", description);
     formData.append("albumTitle", albumTitle);
@@ -87,14 +84,9 @@ const Create = ({ user }) => {
     formData.append("file3", file3);
 
     genres.forEach((genre) => formData.append("genres[]", genre));
-    // formData.append("genres", genres);
-    // genres;
-    console.log(formData);
-    console.log(genres);
 
-    // "http://localhost:4000/api/upload"
     const response = await fetch(
-      process.env.REACT_APP_BACKEND_URL + "/albums",
+      process.env.REACT_APP_BACKEND_URL + "/api/albums",
       {
         method: "POST",
         body: formData,
@@ -104,28 +96,17 @@ const Create = ({ user }) => {
       }
     );
     const json = await response.json();
-    const responseJson = JSON.stringify(json);
 
     if (!response.ok) {
-      console.log("before mistake");
-      setError(json.error);
-      console.log(json);
-
-      // console.log(JSON.parse(json));
-      console.log(response);
-      console.log("after mistake");
+      setError(
+        "Nie można było dodać albumu! Uzupełnij prawdidłowo wszystkie niezbędne pola..."
+      );
     }
 
     if (response.ok) {
-      console.log(json);
-      console.log(responseJson);
       dispatch({ type: "CREATE_ALBUM", payload: json });
       navigate("/");
     }
-    for (var pair of formData.entries()) {
-      console.log(pair[0] + ", " + pair[1]);
-    }
-    // console.log(file, title, description);
   };
 
   const handleAdd = (e) => {
@@ -177,7 +158,6 @@ const Create = ({ user }) => {
         <label className="create-inputs">
           <span>Opis albumu:</span>
           <textarea
-            // className="custom-input"
             placeholder="Uzupełnij..."
             type="text"
             name="name"
@@ -213,19 +193,6 @@ const Create = ({ user }) => {
           />
         </label>
 
-        {/* <label className="create-inputs">
-          <span> Typ nośnika:</span>
-          <input
-            className="custom-input"
-            placeholder="Uzupełnij..."
-            type="text"
-            name="name"
-            onChange={(e) => settype(e.target.value)}
-            value={type}
-            required
-          />
-        </label> */}
-
         <label className="create-inputs select-input">
           <span>Typ nośnika:</span>
           <select
@@ -252,7 +219,6 @@ const Create = ({ user }) => {
               onChange={(e) => setgenre(e.target.value)}
               value={genre}
               ref={ingredientInput}
-              // required
             />
             <button onClick={handleAdd} className="btn-add  hover:text-white">
               Dodaj
@@ -268,13 +234,12 @@ const Create = ({ user }) => {
 
         <div className="custom-files-wrapper flex flex-row w-full justify-around my-10">
           <div className="custom-file-container">
-            {/* <h1>Dodaj okładke płyty </h1> */}
             <input
               type="file"
               name="file"
               id="file"
               onChange={fileForFrontUpload}
-              required
+              // required
               className="hidden"
             />
             <label htmlFor="file" className="custom-file-upload">
@@ -283,7 +248,6 @@ const Create = ({ user }) => {
           </div>
 
           <div className="custom-file-container">
-            {/* <h1>Dodaj tylną okładke płyty</h1> */}
             <input
               type="file"
               name="file2"
@@ -297,7 +261,6 @@ const Create = ({ user }) => {
           </div>
 
           <div className="custom-file-container">
-            {/* <h1>Dodaj zdjęcie zespołu</h1> */}
             <input
               type="file"
               name="file3"
@@ -311,29 +274,12 @@ const Create = ({ user }) => {
           </div>
         </div>
 
-        {/* <div className="custom-file-container">
-          <h1>Upload Back Image</h1>
-          <input
-            type="file"
-            name="file2"
-            onChange={fileForBackUpload}
-            className="border-2 border-black h-24 p-4 hover:bg-black hover:text-white  max-xl:mt-5 w-40"
-          />
-        </div>
-
-        <div className="custom-file-container">
-          <h1>Upload Band Image</h1>
-          <input type="file" name="file3" onChange={fileForBandPicUpload} />
-        </div> */}
-
         <button className="  text-4xl max-xl:my-5 w-40 mx-5 my-5">
           Kliknij żeby dodać album
         </button>
 
         {error && (
-          <p className="text-red-600 font-semibold mb-5 text-lg">
-            Nie można było dodać albumu !
-          </p>
+          <p className="text-red-600 font-semibold mb-5 text-lg">{error}</p>
         )}
 
         {previewUrls.length > 0 &&

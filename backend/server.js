@@ -1,4 +1,5 @@
 require("dotenv").config();
+const path = require("path");
 const cors = require("cors");
 const express = require("express");
 
@@ -13,7 +14,6 @@ const app = express();
 // middleware
 app.use(express.json());
 app.use(cors());
-// app.use(handleImageUpload);
 
 app.use((req, res, next) => {
   console.log(req.path, req.method);
@@ -32,14 +32,25 @@ app.use(
 );
 app.use("/api/user", userRoutes);
 
-app.get("/", (req, res) => {
-  res.json({ mssg: "welcome in main url" });
-});
+if (process.env.NODE_ENV === "production") {
+  console.log("build / production environment is set");
+  const dirname = path.resolve();
+
+  app.use(express.static(path.join(dirname, "../frontend/build")));
+
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(dirname, "../frontend", "build", "index.html"))
+  );
+} else {
+  console.log("dev server");
+  app.get("/", (req, res) => {
+    res.send("API is running....");
+  });
+}
 
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
-    //listen requests
     app.listen(process.env.PORT, () => {
       console.log("connected to db and listening on port", process.env.PORT);
     });

@@ -6,7 +6,7 @@ const commentSchema = new Schema(
   {
     usernameCommenting: {
       type: String,
-      // required: true,
+      required: true,
     },
     comment: {
       type: String,
@@ -43,13 +43,11 @@ const albumSchema = new Schema(
       type: Number,
       required: true,
     },
-    imageUrlFront: String,
+    imageUrlFront: { type: String, required: true },
     imageUrlBack: String,
     imageUrlBandPic: String,
     genres: {
-      // type: Number,
       type: [String],
-      // required: true,
     },
     type: {
       type: String,
@@ -60,43 +58,3 @@ const albumSchema = new Schema(
   { timestamps: true }
 );
 module.exports = mongoose.model("Album", albumSchema);
-// bandName: {
-//   type: String,
-//   required: true,
-// },
-// albumTitle: {
-//   type: String,
-//   required: true,
-// },
-// description: {
-//   type: String,
-//   required: true,
-// },
-// label: {
-//   type: String,
-//   required: false,
-// },
-// released: {
-//   type: Number,
-//   required: true,
-// },
-// genres: {
-//   // type: Number,
-//   type: [String],
-//   required: true,
-// },
-// type: {
-//   type: String,
-//   required: true,
-// },
-// comments: [
-//   {
-//     id: Number,
-//     text: String,
-//     type: String,
-//     date: {
-//       type: Date,
-//       default: Date.now,
-//     },
-//   },
-// ],

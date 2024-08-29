@@ -5,7 +5,6 @@ const LogoutButton = () => {
   const { dispatch } = useUserContext();
 
   const logoutHandler = () => {
-    console.log("logout");
     // remove user from storage
     localStorage.removeItem("user");
 
@@ -13,7 +12,11 @@ const LogoutButton = () => {
     dispatch({ type: "LOGOUT" });
   };
 
-  return <button onClick={logoutHandler}>Logout</button>;
+  return (
+    <button onClick={logoutHandler} className="ml-2">
+      Wyloguj
+    </button>
+  );
 };
 
 export default LogoutButton;

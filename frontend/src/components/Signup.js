@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useUserContext } from "../hooks/useUserContext";
-import { json } from "react-router-dom";
 
 const Signup = () => {
   const { dispatch } = useUserContext();
@@ -10,43 +9,39 @@ const Signup = () => {
   const [password, setpassword] = useState("");
   const [comparePassword, setcomparePassword] = useState("");
   const [error, setError] = useState(null);
-  const [jsonerror, setjsonError] = useState(null);
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    console.log(userName, email, password);
+
     setError(null);
 
-    // const userSignup = {
-    //   userName,
-    //   email,
-    //   password,
-    // };
     if (!userName || !password || !comparePassword || !email) {
       setError("Uzupełnij wszystkie pola!");
       return;
     }
 
     if (password === comparePassword) {
-      console.log("passwords match");
-
-      const response = await fetch("http://localhost:4000/api/user/signup", {
-        method: "POST",
-        body: JSON.stringify({ email, password, userName }),
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/signup`,
+        {
+          method: "POST",
+          body: JSON.stringify({ email, password, userName }),
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       const json = await response.json();
 
+      if (!response.ok) {
+        setError(json.error);
+      }
+
       if (response.ok) {
-        console.log(json);
         localStorage.setItem("user", JSON.stringify(json));
         dispatch({ type: "LOGIN", payload: json });
       }
     } else {
-      console.log("passwords dont match");
-      setError("passwords dont match");
-      setjsonError(json.error);
+      setError("Hasła do siebie nie pasują");
     }
   };
 
@@ -70,7 +65,6 @@ const Signup = () => {
             className="signup-form-inputs ml-2  w-1/2 bg-white  opacity-100"
           />
 
-          <label className=" ">{/* <span>Email</span> */}</label>
           <input
             placeholder="Email"
             type="text"
@@ -80,8 +74,6 @@ const Signup = () => {
             className="ml-2 w-1/2 "
           />
 
-          <label className=" "></label>
-          {/* <span>Hasło</span> */}
           <input
             placeholder="Hasło"
             type="password"
@@ -91,8 +83,6 @@ const Signup = () => {
             className="ml-2 w-1/2 "
           />
 
-          <label className=" "></label>
-          {/* <span>Powtórz hasło</span> */}
           <input
             placeholder="Powtórz hasło"
             type="password"
@@ -103,8 +93,7 @@ const Signup = () => {
           />
 
           <button className="mt-4">Zarejestruj się</button>
-          {error && <p className="my-5">{error}</p>}
-          {jsonerror && <p className="my-5">{jsonerror}</p>}
+          {error && <p className="text-red-600 font-medium my-5">{error}</p>}
         </form>
       </div>
     </div>

@@ -7,13 +7,6 @@ import "./Navbar.css";
 
 export default function Navbar() {
   const { user } = useUserContext();
-  if (user) {
-    console.log(user);
-    // console.log(user.email);
-    // console.log(user.user.user);
-    // console.log(user.user.user.userName);
-    // console.log(user.user.token);
-  }
 
   return (
     <header className="flex flex-row justify-center ">
@@ -24,7 +17,7 @@ export default function Navbar() {
         {!user && (
           <div className="logins bg-black text-amber-50">
             <Link to="/signup" className="inline-block mr-2">
-              Signup
+              Rejestracja
             </Link>
             <Link to="/login" className="inline-block">
               Login

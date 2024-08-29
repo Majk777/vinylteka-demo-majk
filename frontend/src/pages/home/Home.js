@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-// import React, { useEffect, useState } from "react";
+
 import AlbumsList from "../../components/AlbumsList";
 import { useAlbumsContext } from "../../hooks/useAlbumsContext";
 import "./Home.css";
@@ -9,7 +9,6 @@ import BackgroundRight from "./albumkassette.jpg";
 import BackgroundSmall from "./aBannerMediaQ.jpg";
 
 const Home = () => {
-  // const [albums, setAlbums] = useState(null);
   const { albums, dispatch } = useAlbumsContext();
   const [searchText, setSearchText] = useState("");
   const [filteredAlbums, setFilteredAlbums] = useState(null);
@@ -22,7 +21,6 @@ const Home = () => {
 
   const handleInputChange = (e) => {
     setSearchText(e.target.value);
-    console.log(searchText);
   };
 
   //                   WYSZUKIWARKA                 WYSZUKIWARKA                 WYSZUKIWARKA                 WYSZUKIWARKA
@@ -35,49 +33,36 @@ const Home = () => {
     setToggle(!toggle);
 
     nameInput.current.value = "";
-
-    console.log(filteredAlbums);
-    console.log(searchText);
-    console.log("handleSearchClick", albums);
   };
 
   //           KATEGORIE             KATEGORIE             KATEGORIE             KATEGORIE             KATEGORIE
   const handleSearchCategory = (e) => {
-    console.log(e.target.value);
     setFilteredAlbums(null);
     setTypeOfAlbum(e.target.value);
   };
 
   //            WYSZUKIWARKA  CLEAN           WYSZUKIWARKA  CLEAN         WYSZUKIWARKA  CLEAN         WYSZUKIWARKA  CLEAN
   const clearFilterAlbums = () => {
-    console.log("nullowanko albumów");
     setFilteredAlbums(null);
     setTypeOfAlbum(null);
   };
 
   useEffect(() => {
-    console.log(process.env.REACT_APP_BACKEND_URL);
     const fetchAlbums = async () => {
       const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL + "/albums"
+        process.env.REACT_APP_BACKEND_URL + "/api/albums"
       );
       const json = await response.json();
 
       if (response.ok) {
-        // setAlbums(json);
-        console.log(response);
-        console.log(json);
-        console.log(dispatch);
         if (!typeOfAlbum) {
           dispatch({ type: "GET_ALBUMS", payload: json });
-          console.log(typeOfAlbum);
         } else {
           const filteredAlbumsByCategories = json.filter(
             (album) => album.type === typeOfAlbum
           );
 
           dispatch({ type: "GET_ALBUMS", payload: filteredAlbumsByCategories });
-          console.log(typeOfAlbum);
         }
 
         if (searchText) {
@@ -86,10 +71,8 @@ const Home = () => {
           setSearchText("");
         }
       }
-      // console.log(albums);
     };
     fetchAlbums();
-    // console.log(albums); [dispatch, albums]
   }, [dispatch, typeOfAlbum, filteredAlbums]);
 
   return (
@@ -137,7 +120,6 @@ const Home = () => {
       </div>
 
       <div className="typeofalbum flex flex-row justify-around my-20 mx-5">
-        {/* tutaj wyszukiwarka */}
         <div className="search ">
           {!filteredAlbums && (
             <div className="filteredFalse">
@@ -153,8 +135,6 @@ const Home = () => {
                 onClick={handleSearchClick}
                 className="p-2 bg-black  text-white mt-2 ml-2"
               >
-                {/* {toggle ? "Szukaj" : "Wyczyść wyniki"} */}
-                {/* Szukaj */}
                 Szukaj
               </button>
             </div>
@@ -210,9 +190,7 @@ const Home = () => {
 
       <div className=" flex flex-row basis-5/6 justify-self-center justify-center mt-6">
         <div className="containerGrid gap-2">
-          {/* Home */}
           {!albums && <h1>no results</h1>}
-          {/* <div className="flex flex-row"> przed zmianą  */}
 
           {albums &&
             albums.map((album) => {
