@@ -18,7 +18,9 @@ const Album = () => {
 
   useEffect(() => {
     const fetchAlbum = async () => {
-      const response = await fetch(`http://localhost:4000/api/albums/${id}`);
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/albums/${id}`
+      );
       const json = await response.json();
 
       if (response.ok) {
